@@ -22,19 +22,24 @@ exports.initialize = function(pathsObj) {
   });
 };
 
+// console.log('file paths', exports.paths.archivedSites);
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
+	// fs.readFile(exports.paths.archivedSites + '/sites.txt', callback);
 };
 
 exports.isUrlInList = function(url, callback) {
+	//this will check to see if the URL is already in the queue for the worker to handle
 };
 
 exports.addUrlToList = function(url, callback) {
+	//this will write a URL to the fs file/folder
 };
 
 exports.isUrlArchived = function(url, callback) {
+	//this will check to see if the URL is already in the archive file/folder
 };
 
 exports.downloadUrls = function(urls) {
