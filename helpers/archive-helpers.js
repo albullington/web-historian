@@ -26,37 +26,57 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
-	var urlArray = [];
-	fs.readFile(exports.paths.list, 'utf8', (err, data) => {
+	fs.readFile(exports.paths.list, 'utf8', (err, urls) => {
 		if (err) throw err;
-		urlArray.push(callback(data.split('\n')));
-		//console.log(data);
+		urls = urls.toString().split('\n');
+		callback(urls);
 	});
 };
 
 exports.isUrlInList = function(url, callback) {
-	var newArray = [];
-
-	fs.readFile(exports.paths.list, 'utf8', (err, data) => {
-	  if (err) throw err;
-	  newArray = data.split('\n');
-    for (var i = 0; i < newArray.length; i++) {
-    	return callback(newArray[i] === url);
-    }
+	exports.readListOfUrls(function(urls) {
+		for (var i = 0; i < urls.length; i++) {
+			return callback(urls[i] === url);
+		}
 	});
 };
 
 exports.addUrlToList = function(url, callback) {
-	//console.log('url is here', url);
-	console.log('callback is here', callback);
-	fs.appendFile(exports.paths.list, url + '\n', {flag: 'a'}, function() {
-		callback ? callback() : null;
-		console.log('otherwise, a success', url);
+	fs.appendFile(exports.paths.list, url + '\n', (err) => {
+		if (err) {
+			console.log('error', err)
+			callback(false);
+		} else {
+		  callback(true);
+		}
+		console.log('appended file', url)
 	});
+	// setTimeout(function() {
+	// 	callback()
+	// }, 1000);
 };
 
 exports.isUrlArchived = function(url, callback) {
-	//this will check to see if the URL is already in the archive file/folder
+	console.log('here is my url', url);
+	fs.access(exports.paths.archivedSites + '/' + url, (err) => {
+		if (err) throw err;
+		return callback();
+	})
+	// callback();
+	//this will check to see if there is already a folder with this URL name
+	// fs.readdir(exports.paths.archivedSites, (err, files) => {
+ //    	console.log('here are my files', files);
+ //    for (var i = 0; i < files.length; i++) {
+ //    	if (files[i] === url) {
+ //    		return true;
+ //    	} else {
+ //    		return false;
+ //    	}
+ //    }
+	// });
+	// console.log('and my callback', callback);
+ //    callback();
+	// archive.paths.archivedSites + '/www.example.com'
 };
 
 exports.downloadUrls = function(urls) {
