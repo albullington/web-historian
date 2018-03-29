@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var http = require('http');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -27,57 +28,28 @@ exports.initialize = function(pathsObj) {
 
 exports.readListOfUrls = function(callback) {
 	fs.readFile(exports.paths.list, 'utf8', (err, urls) => {
-		if (err) throw err;
 		urls = urls.toString().split('\n');
 		callback(urls);
 	});
 };
 
 exports.isUrlInList = function(url, callback) {
-	exports.readListOfUrls(function(urls) {
-		for (var i = 0; i < urls.length; i++) {
-			return callback(urls[i] === url);
-		}
-	});
+	exports.readListOfUrls(urls => callback(urls.includes(url)));
 };
 
 exports.addUrlToList = function(url, callback) {
-	fs.appendFile(exports.paths.list, url + '\n', (err) => {
-		if (err) {
-			console.log('error', err)
-			callback(false);
-		} else {
-		  callback(true);
-		}
-		console.log('appended file', url)
-	});
-	// setTimeout(function() {
-	// 	callback()
-	// }, 1000);
+	fs.appendFile(exports.paths.list, url + '\n', callback);
 };
 
 exports.isUrlArchived = function(url, callback) {
-	console.log('here is my url', url);
-	fs.access(exports.paths.archivedSites + '/' + url, (err) => {
-		if (err) throw err;
-		return callback();
-	})
-	// callback();
-	//this will check to see if there is already a folder with this URL name
-	// fs.readdir(exports.paths.archivedSites, (err, files) => {
- //    	console.log('here are my files', files);
- //    for (var i = 0; i < files.length; i++) {
- //    	if (files[i] === url) {
- //    		return true;
- //    	} else {
- //    		return false;
- //    	}
- //    }
-	// });
-	// console.log('and my callback', callback);
- //    callback();
-	// archive.paths.archivedSites + '/www.example.com'
+	fs.readdir(exports.paths.archivedSites, (err, files) => callback(files.includes(url)));
 };
 
 exports.downloadUrls = function(urls) {
+	// exports.readListOfUrls(function(urls) {
+	// 	_.each(urls, function(url) {
+	// 	  http.get(url, function() {
+	//     });
+	// 	})
+	// })
 };
