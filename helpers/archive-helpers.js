@@ -46,10 +46,11 @@ exports.isUrlArchived = function(url, callback) {
 };
 
 exports.downloadUrls = function(urls) {
-	// exports.readListOfUrls(function(urls) {
-	// 	_.each(urls, function(url) {
-	// 	  http.get(url, function() {
-	//     });
-	// 	})
-	// })
+	urls.forEach(function(url) {
+			fs.writeFile(exports.paths.archivedSites + '/' + url, (err) => {
+			});
+			http.get('http://' + url, (err, res) => {
+				console.log('successfully downloaded URL');
+			});
+	})
 };
