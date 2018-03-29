@@ -15,7 +15,7 @@ archive.initialize({
 
 var request = supertest.agent(server);
 
-describe.only('server', function() {
+xdescribe('server', function() {
   describe('GET /', function () {
     it('should return the content of index.html', function (done) {
       // just assume that if it contains an <input> tag its index.html
@@ -69,7 +69,7 @@ describe.only('server', function() {
               expect(fileContents).to.equal(url + '\n');
             }
 
-            done(err);
+            done(err);           
           });
       });
     });
@@ -77,7 +77,7 @@ describe.only('server', function() {
 });
 
 describe('archive helpers', function() {
-  describe('#readListOfUrls', function () {
+  xdescribe('#readListOfUrls', function () {
     it('should read urls from sites.txt', function (done) {
       var urlArray = ['example1.com', 'example2.com'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
@@ -89,7 +89,7 @@ describe('archive helpers', function() {
     });
   });
 
-  describe('#isUrlInList', function () {
+  xdescribe('#isUrlInList', function () {
     it('should check if a url is in the list', function (done) {
       var urlArray = ['example1.com', 'example2.com'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));

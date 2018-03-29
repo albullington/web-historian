@@ -22,20 +22,37 @@ exports.initialize = function(pathsObj) {
   });
 };
 
-// console.log('file paths', exports.paths.archivedSites);
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
-	// fs.readFile(exports.paths.archivedSites + '/sites.txt', callback);
+	var urlArray = [];
+	fs.readFile(exports.paths.list, 'utf8', (err, data) => {
+		if (err) throw err;
+		urlArray.push(callback(data.split('\n')));
+		//console.log(data);
+	});
 };
 
 exports.isUrlInList = function(url, callback) {
-	//this will check to see if the URL is already in the queue for the worker to handle
+	var newArray = [];
+
+	fs.readFile(exports.paths.list, 'utf8', (err, data) => {
+	  if (err) throw err;
+	  newArray = data.split('\n');
+    for (var i = 0; i < newArray.length; i++) {
+    	return callback(newArray[i] === url);
+    }
+	});
 };
 
 exports.addUrlToList = function(url, callback) {
-	//this will write a URL to the fs file/folder
+	//console.log('url is here', url);
+	console.log('callback is here', callback);
+	fs.appendFile(exports.paths.list, url + '\n', {flag: 'a'}, function() {
+		callback ? callback() : null;
+		console.log('otherwise, a success', url);
+	});
 };
 
 exports.isUrlArchived = function(url, callback) {

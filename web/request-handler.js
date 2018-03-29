@@ -2,32 +2,51 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 // require more modules/folders here!
 var fs = require('fs');
+var url = require('url');
+var headers = require('./http-helpers');
 
 exports.handleRequest = function (req, res) {
-	if (req.method === 'GET') {
-		res.writeHead(200, {'Content-Type': 'text/html'});
+  var parsedUrl = url.parse(req.url);
+  console.log('this is the parsedUrl', parsedUrl.pathname, 'this is the current reqMethod', req.method);
 
-		fs.readFile(archive.paths.siteAssets + '/index.html', function(err, data) {
-			if (err) {
-				res.writeHead(404);
-			} else {
+	if (req.method === 'GET') {
+		res.writeHead(200, headers['Content-Type']);
+    //only send users to index.html if the filepath is not specified
+		var filename = '';
+		if (parsedUrl.pathname === '/') {
+      filename = archive.paths.siteAssets + '/index.html'
+		} else {
+			filename = archive.paths.archivedSites + '/' + parsedUrl.pathname;
+		};
+
+		fs.readFile(filename, function(err, data) {
+			if (!err) {
 				res.write(data);
-				console.log('read file is working correctly!!', data);
+			} else {
+				res.writeHead(404, headers['Content-Type']);
 			}
 			res.end();
 		});
-
-		// fs.readFile(archive.paths.archivedSites + '/' + path, function(err, data) {
-		// 	if (err) {
-		// 		res.writeHead(404);
-		// 	} else {
-
-		// 		res.write(data);
-		// 		console.log('reading archived sites!!', data);
-		// 	}
-	  // });
-
   }
 
-  // res.end(archive.paths.list);
+  if (req.method === 'POST') {
+  	res.writeHead(302, headers['Content-Type']);
+
+    var newURL = [];
+    var editedURL = '';
+    req.on('data', (chunk) => {
+			newURL.push(chunk);
+			//console.log('this is a chunk', chunk);
+	  }).on('end', () => {
+		  	newURL = Buffer.concat(newURL).toString();
+		  	editedURL = newURL.split('=').splice(1, 1).toString() + '\n';
+		  	//console.log('my new URL is ready', editedURL);
+	    fs.appendFile(archive.paths.list, editedURL, {flag: 'a'}, (err) => {
+	  		if (err) throw err;
+	  	  //console.log('data was appended successfully', editedURL);
+	      res.end();
+	      });
+    });
+  };
+
 };
